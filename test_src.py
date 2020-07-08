@@ -1,8 +1,8 @@
-from typing import Dict
-from src import expectation, sd
+from typing import Dict, Callable
+from src import expectation, sd, expected_utility
 
-# from expectation import expectation
 import pytest
+from pytest import approx
 
 
 @pytest.mark.parametrize(
@@ -15,7 +15,7 @@ import pytest
 )
 def test_expectation(X: Dict[int, float], expected: float):
     actual = expectation(X)
-    assert actual == expected
+    assert actual == approx(expected)
 
 
 @pytest.mark.parametrize(
@@ -28,4 +28,19 @@ def test_expectation(X: Dict[int, float], expected: float):
 )
 def test_sd(X: Dict[int, float], expected: float):
     actual = sd(X)
-    assert actual == expected
+    assert actual == approx(expected)
+
+
+@pytest.mark.parametrize(
+    "u,X,expected",
+    [
+        (lambda x: 300 * x - x ** 2, {100: 0.5, 50: 0.5}, 16250),
+        (lambda x: 300 * x - x ** 2, {120: 0.5, 40: 0.5}, 16000),
+        (lambda x: 100 * x - x ** 2, {40: 0.4, 30: 0.3, 20: 0.2, 10: 0.1}, 2000),
+    ],
+)
+def test_expected_utility(
+    u: Callable[[float], float], X: Dict[int, float], expected: float
+):
+    actual = expected_utility(u, X)
+    assert actual == approx(expected)
