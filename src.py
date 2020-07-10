@@ -1,5 +1,5 @@
 from typing import Dict, Callable
-from math import sqrt
+from math import sqrt, exp
 
 
 def quad_util(a: float) -> Callable[[float], float]:
@@ -24,6 +24,48 @@ def quad_util(a: float) -> Callable[[float], float]:
             return a * x - x ** 2
         else:
             return a ** 2 / 4
+
+    return u
+
+
+def exp_util(c: float) -> Callable[[float], float]:
+    """
+    指数関数的な効用関数を返します。
+
+    Parameters
+    ----------
+    c: float
+        実数
+
+    Returns
+    -------
+    Callable[[float], float]
+        x >= 0 について、u(x) = 1 - exp(-cx) を満たす効用関数u
+    """
+
+    def u(x: float) -> float:
+        return 1 - exp(-c * x)
+
+    return u
+
+
+def pow_util(gamma: float) -> Callable[[float], float]:
+    """
+    べき乗関数的な効用関数を返します。
+
+    Parameters
+    ----------
+    gamma: float
+        実指数
+
+    Returns
+    -------
+    Callable[[float], float]
+        x >= 0 について、u(x) = x^{1 - gamma} / (1 - gamma) を満たす効用関数u
+    """
+
+    def u(x: float) -> float:
+        return x ** (1 - gamma) / (1 - gamma)
 
     return u
 
@@ -137,3 +179,26 @@ def risk_discount(u: Callable[[float], float], X: Dict[int, float]) -> float:
     """
 
     return expectation(X) - certainty_equivalent(u, X)
+
+
+def risk_aversion(u: Callable[[float], float], x: float) -> float:
+    """
+    資産額xにおける効用関数uのリスク回避度を返します。
+
+    Parameters
+    ----------
+    u: Callable[[float], float]
+        単調増加、かつ、限界効用逓減を満たす効用関数
+    x: float
+        資産額
+
+    Returns
+    -------
+    float
+        xにおけるuのリスク回避度
+    """
+
+    h = 1e-3
+    du = (u(x + h) - u(x - h)) / (2 * h)
+    ddu = (u(x + 2 * h) - 2 * u(x) + u(x - 2 * h)) / (4 * h ** 2)
+    return -ddu / du
