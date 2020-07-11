@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, List
 from src import (
     quad_util,
     exp_util,
@@ -9,6 +9,8 @@ from src import (
     certainty_equivalent,
     risk_discount,
     risk_aversion,
+    rate_return,
+    portfolio_return,
 )
 
 import pytest
@@ -140,3 +142,20 @@ def test_risk_discount(
 def test_risk_aversion(u: Callable[[float], float], x: float, expected: float):
     actual = risk_aversion(u, x)
     assert actual == approx(expected, rel=1e-3)
+
+
+@pytest.mark.parametrize(
+    "X0,X1,expected", [(100, 120, 0.2), (100, 90, -0.1), (3.14, 6.28, 1)]
+)
+def test_rate_return(X0: float, X1: float, expected: float):
+    actual = rate_return(X0, X1)
+    assert actual == approx(expected)
+
+
+@pytest.mark.parametrize(
+    "w,mu,expected",
+    [([0.12, 0.06], [0.4, 0.6], 0.084), ([0.12, 0.06, 0.03], [1, 0, 0], 0.12)],
+)
+def test_portfolio_return(w: List[float], mu: List[float], expected: float):
+    actual = portfolio_return(w, mu)
+    assert actual == approx(expected)

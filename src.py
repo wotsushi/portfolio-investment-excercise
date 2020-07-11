@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, List
 from math import sqrt, exp
 
 
@@ -202,3 +202,42 @@ def risk_aversion(u: Callable[[float], float], x: float) -> float:
     du = (u(x + h) - u(x - h)) / (2 * h)
     ddu = (u(x + 2 * h) - 2 * u(x) + u(x - 2 * h)) / (4 * h ** 2)
     return -ddu / du
+
+
+def rate_return(X0: float, X1: float) -> float:
+    """
+    金額X0の投資をして金額X1を回収したときのリターンを返します。
+
+    Parameters
+    ----------
+    X0: float
+        投資額
+    X1: float
+        回収額
+
+    Returns
+    -------
+        投資額がX0, 回収額がX1のときのリターン
+    """
+
+    return X1 / X0 - 1
+
+
+def portfolio_return(w: List[float], mu: List[float]) -> float:
+    """
+    各資産の期待リターンがmu[0], ..., mu[n - 1]のとき、投資比率wで投資したときの期待リターンを返します。
+
+    Parameters
+    ----------
+    w: List[float]
+        投資比率。w[i]は資産iの投資比率を表す。
+        w[0] + ... + w[n - 1] = 1を満たす必要がある。
+    mu: List[float]
+        mu[i]は資産iの期待リターン
+
+    Returns
+    -------
+        各資産の期待リターンがmuのとき、投資比率wで投資したときの期待リターン
+    """
+
+    return sum(w_i * mu_i for w_i, mu_i in zip(w, mu))
