@@ -11,6 +11,7 @@ from src import (
     risk_aversion,
     rate_return,
     portfolio_return,
+    portfolio_risk,
 )
 
 import pytest
@@ -154,8 +155,27 @@ def test_rate_return(X0: float, X1: float, expected: float):
 
 @pytest.mark.parametrize(
     "w,mu,expected",
-    [([0.12, 0.06], [0.4, 0.6], 0.084), ([0.12, 0.06, 0.03], [1, 0, 0], 0.12)],
+    [([0.4, 0.6], [0.12, 0.06], 0.084), ([1, 0, 0], [0.12, 0.06, 0.03], 0.12)],
 )
 def test_portfolio_return(w: List[float], mu: List[float], expected: float):
     actual = portfolio_return(w, mu)
+    assert actual == approx(expected)
+
+
+@pytest.mark.parametrize(
+    "w,sigma,rho,expected",
+    [
+        ([0.4, 0.6], [0.18, 0.12], [[1, 0], [0, 1]], 0.10182337649086284),
+        (
+            [0.5, 0.25, 0.25],
+            [0.12, 0.06, 0.03],
+            [[1, 0.5, 0.5], [0.5, 1, 0.9], [0.5, 0.9, 1]],
+            0.07371397425183368,
+        ),
+    ],
+)
+def test_portfolio_risk(
+    w: List[float], sigma: List[float], rho: List[List[float]], expected: float
+):
+    actual = portfolio_risk(w, sigma, rho)
     assert actual == approx(expected)

@@ -241,3 +241,32 @@ def portfolio_return(w: List[float], mu: List[float]) -> float:
     """
 
     return sum(w_i * mu_i for w_i, mu_i in zip(w, mu))
+
+
+def portfolio_risk(w: List[float], sigma: List[float], rho: List[List[float]]) -> float:
+    """
+    各資産の標準偏差と資産間の相関係数をもとに、指定した投資比率のポートフォリオのトータルリスクを返します。
+
+    Parameters
+    ----------
+    w: List[float]
+        投資比率。w[i]は資産iの投資比率を表す。
+        w[0] + ... + w[n - 1] = 1を満たす必要がある。
+    var: List[float]
+        sigma[i]は資産iの標準偏差
+    rho: List[List[float]]
+        rho[i][j]は資産iと資産jの相関係数
+
+    Returns
+    -------
+        ポートフォリオのトータルリスク
+    """
+
+    n = len(w)
+    return sqrt(
+        sum(
+            w[i] * w[j] * rho[i][j] * sigma[i] * sigma[j]
+            for i in range(n)
+            for j in range(n)
+        )
+    )
